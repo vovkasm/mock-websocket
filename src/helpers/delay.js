@@ -6,5 +6,5 @@
 * @parma {context: object} the context in which to invoke the function
 */
 export default function delay(callback, context) {
-  setImmediate(timeoutContext => callback.call(timeoutContext), context);
+  setImmediate(ctx => callback.call(ctx), context);
 }
