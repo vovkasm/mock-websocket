@@ -13,9 +13,9 @@ test('that mock-socket can be used within JSDOM', async t => {
 
   return new Promise(res => {
     setTimeout(() => {
-      t.truthy(dom.window.Mock.Server);
-      t.truthy(dom.window.Mock.SocketIO);
-      t.truthy(dom.window.Mock.WebSocket);
+      t.truthy(dom.window.MockWebSocket.Server);
+      t.truthy(dom.window.MockWebSocket.SocketIO);
+      t.truthy(dom.window.MockWebSocket.WebSocket);
       res();
     }, 50);
   });
