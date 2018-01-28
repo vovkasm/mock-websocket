@@ -1,7 +1,7 @@
 {
-  "name": "mock-socket",
-  "version": "7.1.0",
-  "description": "Javascript mocking library for websockets and socket.io",
+  "name": "mock-websocket",
+  "version": "0.0.1",
+  "description": "Javascript mocking library for websockets",
   "main": "./dist/mock-socket",
   "directories": {
     "test": "tests"
@@ -15,25 +15,23 @@
     "build": "rm -rf dist && rollup -c rollup.config.js",
     "lint": "eslint src tests",
     "format": "prettier --print-width 120 --single-quote --write '{src,tests}/**/*.js'",
-    "precommit": "lint-staged",
-    "prepublishOnly": "yarn build"
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/thoov/mock-socket.git"
+    "url": "https://github.com/vovkasm/mock-websocket.git"
   },
   "keywords": [
     "websockets",
     "mock",
-    "mocksocket",
-    "sockets"
+    "mocksocket"
   ],
-  "author": "Travis Hoover",
+  "author": "Vladimir Timofeev",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/thoov/mock-socket/issues"
+    "url": "https://github.com/vovkasm/mock-websocket/issues"
   },
-  "homepage": "https://github.com/thoov/mock-socket",
+  "homepage": "https://github.com/vovkasm/mock-websocket",
   "devDependencies": {
     "ava": "^0.19.1",
     "babel-core": "^6.24.1",
