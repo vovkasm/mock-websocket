@@ -89,25 +89,3 @@ test('that removing server and websockets works correctly', t => {
   networkBridge.removeServer('ws://localhost:8080');
   t.deepEqual(networkBridge.urlMap, {}, 'Url map is back in its default state');
 });
-
-test('a socket can join and leave a room', t => {
-  const fakeSocket = { url: 'ws://roomy' };
-
-  networkBridge.attachServer(fakeObject, 'ws://roomy');
-  networkBridge.attachWebSocket(fakeSocket, 'ws://roomy');
-
-  let inRoom;
-  inRoom = networkBridge.websocketsLookup('ws://roomy', 'room');
-  t.is(inRoom.length, 0, 'there are no sockets in the room to start with');
-
-  networkBridge.addMembershipToRoom(fakeSocket, 'room');
-
-  inRoom = networkBridge.websocketsLookup('ws://roomy', 'room');
-  t.is(inRoom.length, 1, 'there is 1 socket in the room after joining');
-  t.deepEqual(inRoom[0], fakeSocket);
-
-  networkBridge.removeMembershipFromRoom(fakeSocket, 'room');
-
-  inRoom = networkBridge.websocketsLookup('ws://roomy', 'room');
-  t.is(inRoom.length, 0, 'there are no sockets in the room after leaving');
-});

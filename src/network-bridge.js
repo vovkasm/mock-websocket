@@ -27,21 +27,6 @@ class NetworkBridge {
   }
 
   /*
-  * Attaches a websocket to a room
-  */
-  addMembershipToRoom(websocket, room) {
-    const connectionLookup = this.urlMap[websocket.url];
-
-    if (connectionLookup && connectionLookup.server && connectionLookup.websockets.indexOf(websocket) !== -1) {
-      if (!connectionLookup.roomMemberships[room]) {
-        connectionLookup.roomMemberships[room] = [];
-      }
-
-      connectionLookup.roomMemberships[room].push(websocket);
-    }
-  }
-
-  /*
   * Attaches a server object to the urlMap hash so that it can find a websockets
   * which are connected to it and so that websockets can in turn can find it.
   *
@@ -116,18 +101,6 @@ class NetworkBridge {
 
     if (connectionLookup) {
       connectionLookup.websockets = reject(connectionLookup.websockets, socket => socket === websocket);
-    }
-  }
-
-  /*
-  * Removes a websocket from a room
-  */
-  removeMembershipFromRoom(websocket, room) {
-    const connectionLookup = this.urlMap[websocket.url];
-    const memberships = connectionLookup.roomMemberships[room];
-
-    if (connectionLookup && memberships !== null) {
-      connectionLookup.roomMemberships[room] = reject(memberships, socket => socket === websocket);
     }
   }
 }

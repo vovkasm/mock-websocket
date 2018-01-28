@@ -6,7 +6,6 @@ test('amd modules are loaded', async t => {
 
   t.truthy(mockSocket.Server);
   t.truthy(mockSocket.WebSocket);
-  t.truthy(mockSocket.SocketIO);
 });
 
 test('umd modules are loaded', async t => {
@@ -14,7 +13,6 @@ test('umd modules are loaded', async t => {
 
   t.truthy(mockSocket.Server);
   t.truthy(mockSocket.WebSocket);
-  t.truthy(mockSocket.SocketIO);
 });
 
 test('cjs modules are loaded', async t => {
@@ -22,7 +20,6 @@ test('cjs modules are loaded', async t => {
 
   t.truthy(mockSocket.Server);
   t.truthy(mockSocket.WebSocket);
-  t.truthy(mockSocket.SocketIO);
 });
 
 // TODO: install traceur (https://github.com/systemjs/plugin-traceur)
@@ -31,5 +28,4 @@ test.skip('es modules are loaded', async t => {
 
   t.truthy(mockSocket.Server);
   t.truthy(mockSocket.WebSocket);
-  t.truthy(mockSocket.SocketIO);
 });

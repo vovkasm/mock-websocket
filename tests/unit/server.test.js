@@ -93,15 +93,6 @@ test.cb('that calling close will trigger the onclose of websockets', t => {
   };
 });
 
-test('a namespaced server is added to the network bridge', t => {
-  const myServer = Server.of('/my-namespace');
-  const urlMap = networkBridge.urlMap['/my-namespace'];
-
-  t.deepEqual(urlMap.server, myServer, 'server was correctly added to the urlMap');
-  myServer.close();
-  t.deepEqual(networkBridge.urlMap, {}, 'the urlMap was cleared after the close call');
-});
-
 test('that calling close will trigger the onclose of websockets', t => {
   const myServer = new Server('ws://example.com');
   const globalObj = globalObject();

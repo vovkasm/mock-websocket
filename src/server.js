@@ -4,7 +4,6 @@ import EventTarget from './event/target';
 import networkBridge from './network-bridge';
 import { CLOSE_CODES } from './constants';
 import globalObject from './helpers/global-object';
-import dedupe from './helpers/dedupe';
 import { createEvent, createMessageEvent, createCloseEvent } from './event/factory';
 
 /*
@@ -178,30 +177,6 @@ class Server extends EventTarget {
   }
 
   /*
-  * Prepares a method to submit an event to members of the room
-  *
-  * e.g. server.to('my-room').emit('hi!');
-  */
-  to(room, broadcaster, broadcastList = []) {
-    const self = this;
-    const websockets = dedupe(broadcastList.concat(networkBridge.websocketsLookup(this.url, room, broadcaster)));
-
-    return {
-      to: (chainedRoom, chainedBroadcaster) => this.to.call(this, chainedRoom, chainedBroadcaster, websockets),
-      emit(event, data) {
-        self.emit(event, data, { websockets });
-      }
-    };
-  }
-
-  /*
-   * Alias for Server.to
-   */
-  in(...args) {
-    return this.to.apply(null, args);
-  }
-
-  /*
    * Simulate an event from the server to the clients. Useful for
    * simulating errors.
    */
@@ -216,14 +191,5 @@ class Server extends EventTarget {
     }
   }
 }
-
-/*
- * Alternative constructor to support namespaces in socket.io
- *
- * http://socket.io/docs/rooms-and-namespaces/#custom-namespaces
- */
-Server.of = function of(url) {
-  return new Server(url);
-};
 
 export default Server;
