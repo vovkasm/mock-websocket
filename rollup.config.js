@@ -7,9 +7,9 @@ export default {
   sourceMap: 'inline',
   plugins: [buble(), resolve({ jsnext: true, main: true }), commonjs()],
   targets: [
-    { dest: 'dist/mock-socket.cjs.js', format: 'cjs' },
-    { dest: 'dist/mock-socket.js', format: 'umd', name: 'MockWebSocket' },
-    { dest: 'dist/mock-socket.amd.js', format: 'amd' },
-    { dest: 'dist/mock-socket.es.js', format: 'es' }
+    { dest: 'dist/mock-websocket.cjs.js', format: 'cjs' },
+    { dest: 'dist/mock-websocket.js', format: 'umd', name: 'MockWebSocket' },
+    { dest: 'dist/mock-websocket.amd.js', format: 'amd' },
+    { dest: 'dist/mock-websocket.es.js', format: 'es' }
   ]
 };
