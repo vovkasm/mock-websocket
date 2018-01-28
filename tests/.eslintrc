@@ -1,0 +1,13 @@
+{
+  "globals": {
+    "it": true,
+    "describe": true,
+    "afterEach": true
+  },
+  "rules": {
+    "no-unused-vars": 0,
+    "no-use-before-define": 0,
+    "no-new": 0,
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }]
+  }
+}

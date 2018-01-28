@@ -1,0 +1,12 @@
+{
+  "include": [
+    "src/**/*.js"
+  ],
+  "require": [
+    "babel-register"
+  ],
+  "reporter": [
+     "lcov",
+     "text"
+   ]
+}

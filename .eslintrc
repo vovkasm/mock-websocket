@@ -1,0 +1,16 @@
+{
+  "extends": "airbnb-base",
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "rules": {
+    "max-len": ["error", 120],
+    "class-methods-use-this": ["error", { "exceptMethods": ["stopPropagation", "stopImmediatePropagation"] }],
+    "consistent-return": 0,
+    "prefer-rest-params": 0,
+    "no-param-reassign": 0,
+    "comma-dangle": ["error", "never"],
+    "arrow-parens": 0
+  }
+}

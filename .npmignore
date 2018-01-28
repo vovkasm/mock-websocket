@@ -1,0 +1,9 @@
+coverage
+tests
+
+.babelrc
+.eslintrc
+.npmignore
+.nycrc
+.travis.yml
+rollup.config.js
