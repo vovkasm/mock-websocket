@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/vovkasm/mock-websocket",
   "devDependencies": {
-    "ava": "^0.19.1",
+    "ava": "^0.25.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-register": "^6.26.0",
