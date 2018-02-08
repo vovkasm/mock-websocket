@@ -3,13 +3,29 @@ import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 
 export default {
-  entry: 'src/index.js',
-  sourceMap: 'inline',
+  input: 'src/index.js',
   plugins: [buble(), resolve({ jsnext: true, main: true }), commonjs()],
-  targets: [
-    { dest: 'dist/mock-websocket.cjs.js', format: 'cjs' },
-    { dest: 'dist/mock-websocket.js', format: 'umd', name: 'MockWebSocket' },
-    { dest: 'dist/mock-websocket.amd.js', format: 'amd' },
-    { dest: 'dist/mock-websocket.es.js', format: 'es' }
+  output: [
+    {
+      file: 'dist/mock-websocket.cjs.js',
+      sourcemap: 'inline',
+      format: 'cjs',
+    },
+    {
+      file: 'dist/mock-websocket.js',
+      sourcemap: 'inline',
+      format: 'umd',
+      name: 'MockWebSocket',
+    },
+    {
+      file: 'dist/mock-websocket.amd.js',
+      sourcemap: 'inline',
+      format: 'amd',
+    },
+    {
+      file: 'dist/mock-websocket.es.js',
+      sourcemap: 'inline',
+      format: 'es',
+    },
   ]
 };
