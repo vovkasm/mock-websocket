@@ -2,10 +2,10 @@ import test from 'ava';
 import WebSocket from '../../src/websocket';
 import EventTarget from '../../src/event/target';
 
-test.skip('that not passing a url throws an error', t => {
-  t.throws(() => {
+test('that not passing a url throws an error', t => {
+  t.throws(function () {
     new WebSocket();
-  }, "Failed to construct 'WebSocket': 1 argument required, but only 0 present");
+  });
 });
 
 test('that websockets inherents EventTarget methods', t => {
