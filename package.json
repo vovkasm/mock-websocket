@@ -22,9 +22,9 @@
     "url": "https://github.com/vovkasm/mock-websocket.git"
   },
   "keywords": [
+    "websocket",
     "websockets",
-    "mock",
-    "mocksocket"
+    "mock"
   ],
   "author": "Vladimir Timofeev",
   "license": "MIT",
