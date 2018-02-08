@@ -48,7 +48,7 @@
     "rollup-plugin-buble": "^0.18.0",
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-node-resolve": "^3.0.0",
-    "systemjs": "^0.20.12"
+    "systemjs": "^0.21.0"
   },
   "ava": {
     "files": [
