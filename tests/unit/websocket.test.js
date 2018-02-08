@@ -3,7 +3,7 @@ import WebSocket from '../../src/websocket';
 import EventTarget from '../../src/event/target';
 
 test('that not passing a url throws an error', t => {
-  t.throws(function () {
+  t.throws(() => {
     new WebSocket();
   });
 });
