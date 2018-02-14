@@ -60,7 +60,7 @@ class Server extends EventTarget {
   /*
   * Removes the mock websocket object from the global object
   */
-  stop(callback = () => {}) {
+  stop(callback) {
     const globalObj = globalObject();
 
     if (this.originalWebSocket) {
