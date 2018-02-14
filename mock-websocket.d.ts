@@ -20,6 +20,17 @@ interface EmitOptions {
 }
 
 interface Server {
+  /**
+   * Attaches the mock websocket object to the global object. Called authomatically in constructor.
+   */
+  start(): void
+
+  /**
+   * Removes the mock websocket object from the global object.
+   */
+  stop(callback?: () => any): void
+
+
   on<K extends keyof ServerHandlerMap> (type: K, handler: ServerHandlerMap[K]): void
   emit (event: string, data: any, options?: EmitOptions): void
   send (data: string, options?: EmitOptions): void
