@@ -39,6 +39,10 @@ class Server extends EventTarget {
       options.selectProtocol = null;
     }
 
+    if (typeof options.mockGlobal === 'undefined') {
+      options.mockGlobal = true
+    }
+
     this.options = options;
 
     this.start();
@@ -48,6 +52,8 @@ class Server extends EventTarget {
   * Attaches the mock websocket object to the global object
   */
   start() {
+    if (!this.options.mockGlobal) return;
+
     const globalObj = globalObject();
 
     if (globalObj.WebSocket) {
@@ -61,15 +67,17 @@ class Server extends EventTarget {
   * Removes the mock websocket object from the global object
   */
   stop(callback) {
-    const globalObj = globalObject();
+    if (this.options.mockGlobal) {
+      const globalObj = globalObject();
 
-    if (this.originalWebSocket) {
-      globalObj.WebSocket = this.originalWebSocket;
-    } else {
-      delete globalObj.WebSocket;
+      if (this.originalWebSocket) {
+        globalObj.WebSocket = this.originalWebSocket;
+      } else {
+        delete globalObj.WebSocket;
+      }
+
+      this.originalWebSocket = null;
     }
-
-    this.originalWebSocket = null;
 
     networkBridge.removeServer(this.url);
 

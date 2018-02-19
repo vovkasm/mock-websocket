@@ -19,6 +19,12 @@ interface EmitOptions {
   websockets?: WebSocket[]
 }
 
+interface ServerOptions {
+  verifyClient?: any
+  selectProtocol?: any
+  mockGlobal?: boolean
+}
+
 interface Server {
   /**
    * Attaches the mock websocket object to the global object. Called authomatically in constructor.
@@ -41,7 +47,7 @@ interface Server {
 
 declare var Server: {
   prototype: Server
-  new (url: string): Server
+  new (url: string, options?: ServerOptions): Server
 }
 
 declare var WebSocket: {
