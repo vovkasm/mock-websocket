@@ -1,8 +1,9 @@
-import test from 'ava';
+import 'jest';
+
 import Server from '../../src/server';
 import WebSocket from '../../src/websocket';
 
-test.cb('mock sockets sends double messages', t => {
+test('mock sockets sends double messages', () => {
   const socketUrl = 'ws://localhost:8080';
   const mockServer = new Server(socketUrl);
   const mockSocketA = new WebSocket(socketUrl);
@@ -10,14 +11,12 @@ test.cb('mock sockets sends double messages', t => {
 
   let numMessagesSent = 0;
   let numMessagesReceived = 0;
-  let connectionsCreated = 0;
 
   const serverMessageHandler = function handlerFunc() {
     numMessagesReceived += 1;
   };
 
   mockServer.on('connection', server => {
-    connectionsCreated += 1;
     server.on('message', serverMessageHandler);
   });
 
@@ -31,9 +30,11 @@ test.cb('mock sockets sends double messages', t => {
     this.send('2');
   };
 
-  setTimeout(() => {
-    t.is(numMessagesReceived, numMessagesSent);
-    mockServer.close();
-    t.end();
-  }, 500);
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      expect(numMessagesReceived).toBe(numMessagesSent)
+      mockServer.close();
+      resolve();
+    }, 500);  
+  })
 });

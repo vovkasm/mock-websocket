@@ -1,8 +1,9 @@
-import test from 'ava';
+import 'jest'
+
 import Server from '../../src/server';
 import WebSocket from '../../src/websocket';
 
-test.cb('websocket onmessage fired before onopen', t => {
+test('websocket onmessage fired before onopen', (done) => {
   const socketUrl = 'ws://localhost:8080';
   const mockServer = new Server(socketUrl);
   const mockSocket = new WebSocket(socketUrl);
@@ -18,7 +19,7 @@ test.cb('websocket onmessage fired before onopen', t => {
   };
 
   mockSocket.onmessage = () => {
-    t.true(onOpenCalled, 'on open was called before onmessage');
-    t.end();
+    expect(onOpenCalled).toBeTruthy()
+    done()
   };
 });

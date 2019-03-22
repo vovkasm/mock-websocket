@@ -1,43 +1,44 @@
-import test from 'ava';
+import 'jest'
+
 import Server from '../../src/server';
 import WebSocket from '../../src/websocket';
 import networkBridge from '../../src/network-bridge';
 
-test.afterEach(() => {
+beforeEach(() => {
   networkBridge.urlMap = {};
 });
 
-test.cb('that creating a websocket with no server invokes the onerror method', t => {
+test('that creating a websocket with no server invokes the onerror method', (done) => {
   const mockSocket = new WebSocket('ws://localhost:8080');
   mockSocket.onerror = function error(event) {
-    t.is(event.target.readyState, WebSocket.CLOSED, 'onerror fires as expected');
-    t.end();
+    expect(event.target.readyState).toBe(WebSocket.CLOSED)
+    done()
   };
 });
 
-test.cb('that onopen is called after successfully connection to the server', t => {
+test('that onopen is called after successfully connection to the server', (done) => {
   const server = new Server('ws://localhost:8080');
   const mockSocket = new WebSocket('ws://localhost:8080');
 
   mockSocket.onopen = function open(event) {
-    t.is(event.target.readyState, WebSocket.OPEN, 'onopen fires as expected');
-    t.end();
+    expect(event.target.readyState).toBe(WebSocket.OPEN)
+    done()
   };
 });
 
-test.cb('that failing the verifyClient check invokes the onerror method', t => {
+test('that failing the verifyClient check invokes the onerror method', (done) => {
   const server = new Server('ws://localhost:8080', {
     verifyClient: () => false
   });
   const mockSocket = new WebSocket('ws://localhost:8080');
 
   mockSocket.onerror = function open(event) {
-    t.is(event.target.readyState, WebSocket.CLOSED, 'onerror fires as expected');
-    t.end();
+    expect(event.target.readyState).toBe(WebSocket.CLOSED)
+    done()
   };
 });
 
-test.cb('that failing the verifyClient check removes the websocket from the networkBridge', t => {
+test('that failing the verifyClient check removes the websocket from the networkBridge', (done) => {
   const server = new Server('ws://localhost:8080', {
     verifyClient: () => false
   });
@@ -45,25 +46,25 @@ test.cb('that failing the verifyClient check removes the websocket from the netw
 
   mockSocket.onclose = function close() {
     const urlMap = networkBridge.urlMap['ws://localhost:8080/'];
-    t.is(urlMap.websockets.length, 0, 'the websocket was removed from the network bridge');
+    expect(urlMap.websockets).toHaveLength(0)
     server.close();
-    t.end();
+    done();
   };
 });
 
-test.cb('that verifyClient is only invoked if it is a function', t => {
+test('that verifyClient is only invoked if it is a function', (done) => {
   const server = new Server('ws://localhost:8080', {
     verifyClient: false
   });
   const mockSocket = new WebSocket('ws://localhost:8080');
 
   mockSocket.onopen = function open(event) {
-    t.is(event.target.readyState, WebSocket.OPEN, 'onopen fires as expected');
-    t.end();
+    expect(event.target.readyState).toBe(WebSocket.OPEN)
+    done()
   };
 });
 
-test.cb('that onmessage is called after the server sends a message', t => {
+test('that onmessage is called after the server sends a message', (done) => {
   const testServer = new Server('ws://localhost:8080');
 
   testServer.on('connection', server => {
@@ -73,12 +74,12 @@ test.cb('that onmessage is called after the server sends a message', t => {
   const mockSocket = new WebSocket('ws://localhost:8080');
 
   mockSocket.onmessage = function message(event) {
-    t.is(event.data, 'Testing', 'onmessage fires as expected');
-    t.end();
+    expect(event.data).toBe('Testing')
+    done();
   };
 });
 
-test.cb('that onclose is called after the client closes the connection', t => {
+test('that onclose is called after the client closes the connection', (done) => {
   const testServer = new Server('ws://localhost:8080');
 
   testServer.on('connection', server => {
@@ -92,17 +93,17 @@ test.cb('that onclose is called after the client closes the connection', t => {
   };
 
   mockSocket.onclose = function close(event) {
-    t.is(event.target.readyState, WebSocket.CLOSED, 'onclose fires as expected');
-    t.end();
+    expect(event.target.readyState).toBe(WebSocket.CLOSED)
+    done()
   };
 });
 
-test.cb('that the server gets called when the client sends a message', t => {
+test('that the server gets called when the client sends a message', (done) => {
   const testServer = new Server('ws://localhost:8080');
 
-  testServer.on('message', data => {
-    t.is(data, 'Testing', 'on message fires as expected');
-    t.end();
+  testServer.on('message', (data) => {
+    expect(data).toBe('Testing')
+    done();
   });
 
   const mockSocket = new WebSocket('ws://localhost:8080');
@@ -112,30 +113,33 @@ test.cb('that the server gets called when the client sends a message', t => {
   };
 });
 
-test.cb('that the onopen function will only be called once for each client', t => {
+test('that the onopen function will only be called once for each client', () => {
   const socketUrl = 'ws://localhost:8080';
   const mockServer = new Server(socketUrl);
-  const websocketFoo = new WebSocket(socketUrl);
+
   const websocketBar = new WebSocket(socketUrl);
+  const doneBar = new Promise((resolve, reject) => {
+    websocketBar.onopen = resolve
+  })
+  
+  
+  const websocketFoo = new WebSocket(socketUrl);
+  const doneFoo = new Promise((resolve, reject) => {
+    websocketFoo.onopen = resolve
+  })
 
-  websocketFoo.onopen = function open() {
-    t.true(true, 'mocksocket onopen fires as expected');
-  };
-
-  websocketBar.onopen = function open() {
-    t.true(true, 'mocksocket onopen fires as expected');
-    mockServer.close();
-    t.end();
-  };
+  return Promise.all([doneBar, doneFoo]).then(() => {
+    mockServer.close()
+  })
 });
 
-test.cb('closing a client will only close itself and not other clients', t => {
+test('closing a client will only close itself and not other clients', (done) => {
   const server = new Server('ws://localhost:8080');
   const websocketFoo = new WebSocket('ws://localhost:8080');
   const websocketBar = new WebSocket('ws://localhost:8080');
 
   websocketFoo.onclose = function close() {
-    t.true(false, 'mocksocket should not close');
+    fail('should not close')
   };
 
   websocketBar.onopen = function open() {
@@ -143,12 +147,11 @@ test.cb('closing a client will only close itself and not other clients', t => {
   };
 
   websocketBar.onclose = function close() {
-    t.true(true, 'mocksocket onclose fires as expected');
-    t.end();
+    done()
   };
 });
 
-test.cb('mock clients can send messages to the right mock server', t => {
+test('mock clients can send messages to the right mock server', () => {
   const serverFoo = new Server('ws://localhost:8080');
   const serverBar = new Server('ws://localhost:8081');
   const dataFoo = 'foo';
@@ -156,54 +159,57 @@ test.cb('mock clients can send messages to the right mock server', t => {
   const socketFoo = new WebSocket('ws://localhost:8080');
   const socketBar = new WebSocket('ws://localhost:8081');
 
-  serverFoo.on('connection', server => {
-    t.true(true, 'mock server on connection fires as expected');
+  const doneFoo = new Promise((resolve, reject) => {
+    serverFoo.on('connection', server => {
+      server.on('message', data => {
+        expect(data).toBe(dataFoo)
+        resolve()
+      });
+    });  
+  })
 
-    server.on('message', data => {
-      t.is(data, dataFoo);
-    });
-  });
-
-  serverBar.on('connection', server => {
-    t.true(true, 'mock server on connection fires as expected');
-
-    server.on('message', data => {
-      t.is(data, dataBar);
-      t.end();
-    });
-  });
+  const doneBar = new Promise((resolve, reject) => {
+    serverBar.on('connection', server => {
+      server.on('message', data => {
+        expect(data).toBe(dataBar)
+        resolve()
+      });
+    });  
+  })
 
   socketFoo.onopen = function open() {
-    t.true(true, 'mocksocket onopen fires as expected');
     this.send(dataFoo);
   };
 
   socketBar.onopen = function open() {
-    t.true(true, 'mocksocket onopen fires as expected');
     this.send(dataBar);
   };
+
+  return Promise.all([doneFoo, doneBar]).then(() => {
+    serverBar.close()
+    serverFoo.close()
+  })
 });
 
-test.cb('that closing a websocket removes it from the network bridge', t => {
+test('that closing a websocket removes it from the network bridge', (done) => {
   const server = new Server('ws://localhost:8080');
   const socket = new WebSocket('ws://localhost:8080');
 
   socket.onopen = function open() {
     const urlMap = networkBridge.urlMap['ws://localhost:8080/'];
-    t.is(urlMap.websockets.length, 1, 'the websocket is in the network bridge');
-    t.deepEqual(urlMap.websockets[0], this, 'the websocket is in the network bridge');
+    expect(urlMap.websockets).toEqual([this])
     this.close();
   };
 
   socket.onclose = function close() {
     const urlMap = networkBridge.urlMap['ws://localhost:8080/'];
-    t.is(urlMap.websockets.length, 0, 'the websocket was removed from the network bridge');
+    expect(urlMap.websockets).toHaveLength(0)
     server.close();
-    t.end();
+    done();
   };
 });
 
-test.cb('that it is possible to simulate an error from the server to the clients', t => {
+test('that it is possible to simulate an error from the server to the clients', (done) => {
   const server = new Server('ws://localhost:8080');
   const socket = new WebSocket('ws://localhost:8080');
 
@@ -212,24 +218,23 @@ test.cb('that it is possible to simulate an error from the server to the clients
   };
 
   socket.onerror = function error() {
-    t.pass('On error was called after it was simulated');
-    t.end();
+    done()
   };
 });
 
-test.cb('that failing the selectProtocol check invokes the onerror method', t => {
+test('that failing the selectProtocol check invokes the onerror method', (done) => {
   const server = new Server('ws://localhost:8080', {
     selectProtocol: () => false
   });
   const mockSocket = new WebSocket('ws://localhost:8080');
 
   mockSocket.onerror = function open(event) {
-    t.is(event.target.readyState, WebSocket.CLOSED, 'onerror fires as expected');
-    t.end();
+    expect(event.target.readyState).toBe(WebSocket.CLOSED)
+    done()
   };
 });
 
-test.cb('that failing the selectProtocol check removes the websocket from the networkBridge', t => {
+test('that failing the selectProtocol check removes the websocket from the networkBridge', (done) => {
   const server = new Server('ws://localhost:8080', {
     selectProtocol: () => false
   });
@@ -237,76 +242,72 @@ test.cb('that failing the selectProtocol check removes the websocket from the ne
 
   mockSocket.onclose = function close() {
     const urlMap = networkBridge.urlMap['ws://localhost:8080/'];
-    t.is(urlMap.websockets.length, 0, 'the websocket was removed from the network bridge');
+    expect(urlMap.websockets).toHaveLength(0)
     server.close();
-    t.end();
+    done();
   };
 });
 
-test.cb('that selectProtocol is only invoked if it is a function', t => {
+test('that selectProtocol is only invoked if it is a function', (done) => {
   const server = new Server('ws://localhost:8080', {
     selectProtocol: false
   });
   const mockSocket = new WebSocket('ws://localhost:8080');
 
   mockSocket.onopen = function open(event) {
-    t.is(event.target.readyState, WebSocket.OPEN, 'onopen fires as expected');
-    t.end();
+    expect(event.target.readyState).toBe(WebSocket.OPEN)
+    done()
   };
 });
 
-test.cb('that selectProtocol should be invoked with a empty string if unspecified', t => {
+test('that selectProtocol should be invoked with a empty string if unspecified', (done) => {
   const server = new Server('ws://localhost:8080', {
     selectProtocol(protocols) {
-      t.deepEqual(protocols, ['']);
+      expect(protocols).toEqual([''])
       return '';
     }
   });
   const mockSocket = new WebSocket('ws://localhost:8080');
 
   mockSocket.onopen = function open(event) {
-    t.is(event.target.readyState, WebSocket.OPEN, 'onopen fires as expected');
-    t.is(event.target.protocol, '');
-    t.end();
+    expect(event.target.protocol).toBe('')
+    done()
   };
 });
 
-test.cb('that selectProtocol should be invoked with a single protocol', t => {
+test('that selectProtocol should be invoked with a single protocol', (done) => {
   const server = new Server('ws://localhost:8080', {
     selectProtocol(protocols) {
-      t.deepEqual(protocols, ['text']);
+      expect(protocols).toEqual(['text']);
       return 'text';
     }
   });
   const mockSocket = new WebSocket('ws://localhost:8080', 'text');
 
   mockSocket.onopen = function open(event) {
-    t.is(event.target.readyState, WebSocket.OPEN, 'onopen fires as expected');
-    t.is(event.target.protocol, 'text');
-    t.end();
+    expect(event.target.protocol).toBe('text')
+    done();
   };
 });
 
-test.cb('that selectProtocol should be able to select any of the requested protocols', t => {
+test('that selectProtocol should be able to select any of the requested protocols', (done) => {
   const server = new Server('ws://localhost:8080', {
     selectProtocol(protocols) {
-      t.deepEqual(protocols, ['text', 'binary']);
+      expect(protocols).toEqual(['text', 'binary'])
       return 'binary';
     }
   });
   const mockSocket = new WebSocket('ws://localhost:8080', ['text', 'binary']);
 
   mockSocket.onopen = function open(event) {
-    t.is(event.target.readyState, WebSocket.OPEN, 'onopen fires as expected');
-    t.is(event.target.protocol, 'binary');
-    t.end();
+    expect(event.target.protocol).toBe('binary');
+    done();
   };
 });
 
-test.cb('that client should close if the subprotocol is not of the selected set', t => {
+test('that client should close if the subprotocol is not of the selected set', (done) => {
   const server = new Server('ws://localhost:8080', {
     selectProtocol(protocols) {
-      t.deepEqual(protocols, ['text']);
       return 'unsupported';
     }
   });
@@ -314,24 +315,22 @@ test.cb('that client should close if the subprotocol is not of the selected set'
 
   mockSocket.onclose = function close() {
     const urlMap = networkBridge.urlMap['ws://localhost:8080/'];
-    t.is(urlMap.websockets.length, 0, 'the websocket was removed from the network bridge');
+    expect(urlMap.websockets).toHaveLength(0)
     server.close();
-    t.end();
+    done();
   };
 });
 
-test.cb('the server should be able to select _none_ of the protocols from the client', t => {
+test('the server should be able to select _none_ of the protocols from the client', (done) => {
   const server = new Server('ws://localhost:8080', {
     selectProtocol(protocols) {
-      t.deepEqual(protocols, ['text', 'binary']);
       return '';
     }
   });
   const mockSocket = new WebSocket('ws://localhost:8080', ['text', 'binary']);
 
   mockSocket.onopen = function open(event) {
-    t.is(event.target.readyState, WebSocket.OPEN, 'onopen fires as expected');
-    t.is(event.target.protocol, '');
-    t.end();
+    expect(event.target.protocol).toBe('');
+    done();
   };
 });
