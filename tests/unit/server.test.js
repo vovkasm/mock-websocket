@@ -1,49 +1,49 @@
-import test from 'ava';
+import 'jest'
+
 import Server from '../../src/server';
 import WebSocket from '../../src/websocket';
 import EventTarget from '../../src/event/target';
 import networkBridge from '../../src/network-bridge';
 import globalObject from '../../src/helpers/global-object';
 
-test('that server inherents EventTarget methods', t => {
+test('that server inherents EventTarget methods', () => {
   const myServer = new Server('ws://not-real');
-  t.true(myServer instanceof EventTarget);
+  expect(myServer).toBeInstanceOf(EventTarget)
   myServer.close();
 });
 
-test('that after creating a server it is added to the network bridge', t => {
+test('that after creating a server it is added to the network bridge', () => {
   const myServer = new Server('ws://not-real/');
-  const urlMap = networkBridge.urlMap['ws://not-real/'];
+  const mapping = networkBridge.urlMap['ws://not-real/'];
 
-  t.deepEqual(urlMap.server, myServer, 'server was correctly added to the urlMap');
+  expect(mapping.server).toBe(myServer)
   myServer.close();
-  t.deepEqual(networkBridge.urlMap, {}, 'the urlMap was cleared after the close call');
+  expect(networkBridge.urlMap).toEqual({})
 });
 
-test('that callback functions can be added to the listeners object', t => {
+test('that callback functions can be added to the listeners object', () => {
   const myServer = new Server('ws://not-real/');
 
   myServer.on('message', () => {});
   myServer.on('close', () => {});
 
-  t.is(myServer.listeners.message.length, 1);
-  t.is(myServer.listeners.close.length, 1);
+  expect(myServer.listeners.message).toHaveLength(1);
+  expect(myServer.listeners.close).toHaveLength(1);
 
   myServer.close();
 });
 
-test('that calling clients() returns the correct clients', t => {
+test('that calling clients() returns the correct clients', () => {
   const myServer = new Server('ws://not-real/');
   const socketFoo = new WebSocket('ws://not-real/');
   const socketBar = new WebSocket('ws://not-real/');
 
-  t.is(myServer.clients().length, 2, 'calling clients returns the 2 websockets');
-  t.deepEqual(myServer.clients(), [socketFoo, socketBar], 'The clients matches [socketFoo, socketBar]');
+  expect(myServer.clients()).toEqual([socketFoo, socketBar])
 
   myServer.close();
 });
 
-test.cb('that calling clients() returns the correct clients', t => {
+test('that calling clients() returns the correct clients', () => {
   const myServer = new Server('ws://not-real/');
 
   myServer.on('connection', (server, socket) => {
@@ -51,24 +51,26 @@ test.cb('that calling clients() returns the correct clients', t => {
   });
 
   const socketFoo = new WebSocket('ws://not-real/');
-  const socketBar = new WebSocket('ws://not-real/');
-  socketFoo.onmessage = () => {
-    t.true(true, 'socketFoo onmessage was correctly called');
-  };
+  const doneFoo = new Promise((resolve, reject) => {
+    socketFoo.onmessage = resolve
+  })
 
-  socketBar.onmessage = () => {
-    t.true(true, 'socketBar onmessage was correctly called');
-    myServer.close();
-    t.end();
-  };
+  const socketBar = new WebSocket('ws://not-real/');
+  const doneBar = new Promise((resolve, reject) => {
+    socketBar.onmessage = resolve
+  })
+
+  return Promise.all([doneFoo, doneBar]).then(() => {
+    myServer.close()
+  })
 });
 
-test.cb('that calling close will trigger the onclose of websockets', t => {
+test('that calling close will trigger the onclose of websockets', () => {
   const myServer = new Server('ws://not-real/');
   let counter = 0;
 
   myServer.on('connection', () => {
-    counter += 1;
+    counter++
     if (counter === 2) {
       myServer.close({
         code: 1005,
@@ -78,33 +80,38 @@ test.cb('that calling close will trigger the onclose of websockets', t => {
   });
 
   const socketFoo = new WebSocket('ws://not-real/');
+  const doneFoo = new Promise((resolve, reject) => {
+    socketFoo.onclose = event => {
+      expect(event.code).toBe(1005)
+      expect(event.reason).toBe('Some reason')
+      resolve()
+    };
+  })
+  
   const socketBar = new WebSocket('ws://not-real/');
-  socketFoo.onclose = event => {
-    t.true(true, 'socketFoo onmessage was correctly called');
-    t.is(event.code, 1005, 'the correct code was recieved');
-    t.is(event.reason, 'Some reason', 'the correct reason was recieved');
-  };
+  const doneBar = new Promise((resolve, reject) => {
+    socketBar.onclose = event => {
+      expect(event.code).toBe(1005)
+      expect(event.reason).toBe('Some reason')
+      resolve()
+    };
+  })
 
-  socketBar.onclose = event => {
-    t.pass(true, 'socketBar onmessage was correctly called');
-    t.is(event.code, 1005, 'the correct code was recieved');
-    t.is(event.reason, 'Some reason', 'the correct reason was recieved');
-    t.end();
-  };
+  return Promise.all([doneFoo, doneBar])
 });
 
-test('that calling close will trigger the onclose of websockets', t => {
+test('globals', () => {
   const myServer = new Server('ws://example.com');
   const globalObj = globalObject();
   const originalWebSocket = globalObj.WebSocket;
 
   myServer.start();
 
-  t.deepEqual(globalObj.WebSocket, WebSocket, 'WebSocket class is defined on the globalObject');
-  t.deepEqual(myServer.originalWebSocket, originalWebSocket, 'the original websocket is stored');
+  expect(globalObj.WebSocket).toBe(WebSocket)
+  expect(myServer.originalWebSocket).toBe(originalWebSocket)
 
   myServer.stop();
 
-  t.is(myServer.originalWebSocket, null, 'server forgets about the original websocket');
-  t.deepEqual(globalObj.WebSocket, originalWebSocket, 'the original websocket is returned to the global object');
+  expect(myServer.originalWebSocket).toBeNull()
+  expect(globalObj.WebSocket).toBe(originalWebSocket)
 });

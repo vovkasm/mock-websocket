@@ -1,47 +1,48 @@
-import test from 'ava';
+import 'jest';
+
 import { createEvent, createMessageEvent, createCloseEvent } from '../../src/event/factory';
 
 const fakeObject = { foo: 'bar' };
 
-test('that the create methods throw errors if no type if specified', t => {
-  t.throws(() => createEvent(), "Cannot read property 'type' of undefined");
-  t.throws(() => createMessageEvent(), "Cannot read property 'type' of undefined");
+test('that the create methods throw errors if no type if specified', () => {
+  expect(() => createEvent()).toThrow();
+  expect(() => createMessageEvent()).toThrow();
 });
 
-test('that createEvent correctly creates an event', t => {
+test('that createEvent correctly creates an event', () => {
   let event = createEvent({
     type: 'open'
   });
 
-  t.is(event.type, 'open', 'the type property is set');
-  t.is(event.target, null, 'target is null as no target was passed');
-  t.is(event.srcElement, null, 'srcElement is null as no target was passed');
-  t.is(event.currentTarget, null, 'currentTarget is null as no target was passed');
+  expect(event.type).toBe('open');
+  expect(event.target).toBe(null);
+  expect(event.srcElement).toBe(null);
+  expect(event.currentTarget).toBe(null);
 
   event = createEvent({
     type: 'open',
     target: fakeObject
   });
 
-  t.deepEqual(event.target, fakeObject, 'target is set to fakeObject');
-  t.deepEqual(event.srcElement, fakeObject, 'srcElement is set to fakeObject');
-  t.deepEqual(event.currentTarget, fakeObject, 'currentTarget is set to fakeObject');
+  expect(event.target).toEqual( fakeObject); 
+  expect(event.srcElement).toEqual( fakeObject); 
+  expect(event.currentTarget).toEqual( fakeObject); 
 });
 
-test('that createMessageEvent correctly creates an event', t => {
+test('that createMessageEvent correctly creates an event', () => {
   let event = createMessageEvent({
     type: 'message',
     origin: 'ws://localhost:8080',
     data: 'Testing'
   });
 
-  t.is(event.type, 'message', 'the type property is set');
-  t.is(event.data, 'Testing', 'the data property is set');
-  t.is(event.origin, 'ws://localhost:8080', 'the origin property is set');
-  t.is(event.target, null, 'target is null as no target was passed');
-  t.is(event.lastEventId, '', 'lastEventId is an empty string');
-  t.is(event.srcElement, null, 'srcElement is null as no target was passed');
-  t.is(event.currentTarget, null, 'currentTarget is null as no target was passed');
+  expect(event.type).toBe( 'message')
+  expect(event.data).toBe( 'Testing')
+  expect(event.origin).toBe( 'ws://localhost:8080')
+  expect(event.target).toBe( null);
+  expect(event.lastEventId).toBe( '');
+  expect(event.srcElement).toBe( null);
+  expect(event.currentTarget).toBe( null);
 
   event = createMessageEvent({
     type: 'close',
@@ -50,23 +51,21 @@ test('that createMessageEvent correctly creates an event', t => {
     target: fakeObject
   });
 
-  t.is(event.lastEventId, '', 'lastEventId is an empty string');
-  t.deepEqual(event.target, fakeObject, 'target is set to fakeObject');
-  t.deepEqual(event.srcElement, fakeObject, 'srcElement is set to fakeObject');
-  t.deepEqual(event.currentTarget, fakeObject, 'currentTarget is set to fakeObject');
+  expect(event.lastEventId).toBe('');
+  expect(event.target).toEqual(fakeObject);
+  expect(event.srcElement).toEqual(fakeObject);
+  expect(event.currentTarget).toEqual(fakeObject);
 });
 
-test('that createCloseEvent correctly creates an event', t => {
-  let event = createCloseEvent({
-    type: 'close'
-  });
+test('that createCloseEvent correctly creates an event', () => {
+  let event = createCloseEvent({ type: 'close' });
 
-  t.is(event.code, 0, 'the code property is set');
-  t.is(event.reason, '', 'the reason property is set');
-  t.is(event.target, null, 'target is null as no target was passed');
-  t.is(event.wasClean, false, 'wasClean is false as the code is not 1000');
-  t.is(event.srcElement, null, 'srcElement is null as no target was passed');
-  t.is(event.currentTarget, null, 'currentTarget is null as no target was passed');
+  expect(event.code).toBe(0)
+  expect(event.reason).toBe('')
+  expect(event.target).toBe(null)
+  expect(event.wasClean).toBe(false)
+  expect(event.srcElement).toBe(null)
+  expect(event.currentTarget).toBe(null)
 
   event = createCloseEvent({
     type: 'close',
@@ -75,16 +74,16 @@ test('that createCloseEvent correctly creates an event', t => {
     target: fakeObject
   });
 
-  t.is(event.code, 1001, 'the code property is set');
-  t.is(event.reason, 'my bad', 'the reason property is set');
-  t.deepEqual(event.target, fakeObject, 'target is set to fakeObject');
-  t.deepEqual(event.srcElement, fakeObject, 'srcElement is set to fakeObject');
-  t.deepEqual(event.currentTarget, fakeObject, 'currentTarget is set to fakeObject');
+  expect(event.code).toBe(1001)
+  expect(event.reason).toBe('my bad')
+  expect(event.target).toEqual(fakeObject)
+  expect(event.srcElement).toEqual(fakeObject)
+  expect(event.currentTarget).toEqual(fakeObject)
 
   event = createCloseEvent({
     type: 'close',
     code: 1000
   });
 
-  t.is(event.wasClean, true, 'wasClean is true as the code is 1000');
+  expect(event.wasClean).toBeTruthy()
 });

@@ -1,24 +1,20 @@
-import test from 'ava';
+import 'jest'
+
 import WebSocket from '../../src/websocket';
 import EventTarget from '../../src/event/target';
 
-test('that not passing a url throws an error', t => {
-  t.throws(() => {
+test('that not passing a url throws an error', () => {
+  expect(() => {
     new WebSocket();
-  });
+  }).toThrow()
 });
 
-test('that websockets inherents EventTarget methods', t => {
+test('that websockets inherents EventTarget methods', () => {
   const mySocket = new WebSocket('ws://not-real');
-  t.true(mySocket instanceof EventTarget);
+  expect(mySocket).toBeInstanceOf(EventTarget);
 });
 
-test('that websockets inherents EventTarget methods', t => {
-  const mySocket = new WebSocket('ws://not-real');
-  t.true(mySocket instanceof EventTarget);
-});
-
-test('that on(open, message, error, and close) can be set', t => {
+test('that on(open, message, error, and close) can be set', () => {
   const mySocket = new WebSocket('ws://not-real');
 
   mySocket.onopen = () => {};
@@ -28,28 +24,25 @@ test('that on(open, message, error, and close) can be set', t => {
 
   const listeners = mySocket.listeners;
 
-  t.is(listeners.open.length, 1);
-  t.is(listeners.message.length, 1);
-  t.is(listeners.close.length, 1);
-  t.is(listeners.error.length, 1);
+  expect(listeners.open).toHaveLength(1)
+  expect(listeners.message).toHaveLength(1)
+  expect(listeners.close).toHaveLength(1)
+  expect(listeners.error).toHaveLength(1)
 });
 
-test('that passing protocols into the constructor works', t => {
-  const mySocket = new WebSocket('ws://not-real', 'foo');
-  const myOtherSocket = new WebSocket('ws://not-real', ['bar']);
+test('that passing protocols into the constructor works', () => {
+  const s1 = new WebSocket('ws://not-real', 'foo');
+  const s2 = new WebSocket('ws://not-real', ['bar']);
 
-  t.is(mySocket.protocol, 'foo', 'the correct protocol is set when it was passed in as a string');
-  t.is(myOtherSocket.protocol, 'bar', 'the correct protocol is set when it was passed in as an array');
+  expect(s1.protocol).toBe('foo')
+  expect(s2.protocol).toBe('bar')
 });
 
-test('that sending when the socket is closed throws an expection', t => {
-  const mySocket = new WebSocket('ws://not-real', 'foo');
-  mySocket.readyState = WebSocket.CLOSED;
-  t.throws(
+test('that sending when the socket is closed throws an expection', () => {
+  const s = new WebSocket('ws://not-real', 'foo');
+  s.readyState = WebSocket.CLOSED;
+  expect(
     () => {
-      mySocket.send('testing');
-    },
-    'WebSocket is already in CLOSING or CLOSED state',
-    'an expection is thrown when sending while closed'
-  );
+      s.send('testing');
+    }).toThrow()
 });

@@ -1,91 +1,86 @@
-import test from 'ava';
+import 'jest'
+
 import networkBridge from '../../src/network-bridge';
 
 const fakeObject = { foo: 'bar' };
 
-test.afterEach(() => {
+beforeEach(() => {
   networkBridge.urlMap = {};
 });
 
-test('that network bridge has no connections be defualt', t => {
-  t.deepEqual(networkBridge.urlMap, {}, 'Url map is empty by default');
+test('that network bridge has no connections be defualt', () => {
+  expect(networkBridge.urlMap).toEqual({})
 });
 
-test('that network bridge has no connections be defualt', t => {
+test('that network bridge has no connections be defualt', () => {
   const result = networkBridge.attachWebSocket(fakeObject, 'ws://localhost:8080');
 
-  t.truthy(!result, 'no server was returned as a server must be added first');
-  t.deepEqual(networkBridge.urlMap, {}, 'nothing was added to the url map');
+  expect(result).toBeFalsy()
+  expect(networkBridge.urlMap).toEqual({})
 });
 
-test('that attachServer adds a server to url map', t => {
+test('that attachServer adds a server to url map', () => {
   const result = networkBridge.attachServer(fakeObject, 'ws://localhost:8080');
   const connection = networkBridge.urlMap['ws://localhost:8080'];
 
-  t.deepEqual(result, fakeObject, 'the server was returned because it was successfully added to the url map');
-  t.deepEqual(connection.server, fakeObject, 'fakeObject was added to the server property');
-  t.is(connection.websockets.length, 0, 'websocket property was set to an empty array');
+  expect(result).toEqual(fakeObject)
+  expect(connection.server).toEqual(fakeObject)
+  expect(connection.websockets).toHaveLength(0)
 });
 
-test('that attachServer does nothing if a server is already attached to a given url', t => {
+test('that attachServer does nothing if a server is already attached to a given url', () => {
   const result = networkBridge.attachServer(fakeObject, 'ws://localhost:8080');
   const result2 = networkBridge.attachServer({ hello: 'world' }, 'ws://localhost:8080');
   const connection = networkBridge.urlMap['ws://localhost:8080'];
 
-  t.truthy(!result2, 'no server was returned as a server was already listening to that url');
-  t.deepEqual(result, fakeObject, 'the server was returned because it was successfully added to the url map');
-  t.deepEqual(connection.server, fakeObject, 'fakeObject was added to the server property');
-  t.is(connection.websockets.length, 0, 'websocket property was set to an empty array');
+  expect(result).toEqual(fakeObject)
+  expect(result2).toBeFalsy()
+  expect(connection.server).toEqual(fakeObject)
 });
 
-test('that attachWebSocket will add a websocket to the url map', t => {
+test('that attachWebSocket will add a websocket to the url map', () => {
   const resultServer = networkBridge.attachServer(fakeObject, 'ws://localhost:8080');
   const resultWebSocket = networkBridge.attachWebSocket(fakeObject, 'ws://localhost:8080');
   const connection = networkBridge.urlMap['ws://localhost:8080'];
 
-  t.deepEqual(resultServer, fakeObject, 'server returned because it was successfully added to the url map');
-  t.deepEqual(resultWebSocket, fakeObject, 'server returned as the websocket was successfully added to the map');
-  t.deepEqual(connection.websockets[0], fakeObject, 'fakeObject was added to the websockets array');
-  t.is(connection.websockets.length, 1, 'websocket property contains only the websocket object');
+  expect(resultServer).toBe(fakeObject)
+  expect(resultWebSocket).toBe(fakeObject)
+  expect(connection.websockets).toEqual([fakeObject])
 });
 
-test('that attachWebSocket will add the same websocket only once', t => {
-  const resultServer = networkBridge.attachServer(fakeObject, 'ws://localhost:8080');
-  const resultWebSocket = networkBridge.attachWebSocket(fakeObject, 'ws://localhost:8080');
+test('that attachWebSocket will add the same websocket only once', () => {
+  networkBridge.attachServer(fakeObject, 'ws://localhost:8080');
+  networkBridge.attachWebSocket(fakeObject, 'ws://localhost:8080');
   const resultWebSocket2 = networkBridge.attachWebSocket(fakeObject, 'ws://localhost:8080');
   const connection = networkBridge.urlMap['ws://localhost:8080'];
 
-  t.deepEqual(resultServer, fakeObject, 'server returned because it was successfully added to the url map');
-  t.deepEqual(resultWebSocket, fakeObject, 'server returned as the websocket was successfully added to the map');
-  t.truthy(!resultWebSocket2, 'nothing added as the websocket already existed inside the url map');
-  t.deepEqual(connection.websockets[0], fakeObject, 'fakeObject was added to the websockets array');
-  t.is(connection.websockets.length, 1, 'websocket property contains only the websocket object');
+  expect(resultWebSocket2).toBeFalsy()
+  expect(connection.websockets).toEqual([fakeObject])
 });
 
-test('that server and websocket lookups return the correct objects', t => {
+test('that server and websocket lookups return the correct objects', () => {
   networkBridge.attachServer(fakeObject, 'ws://localhost:8080');
   networkBridge.attachWebSocket(fakeObject, 'ws://localhost:8080');
 
   const serverLookup = networkBridge.serverLookup('ws://localhost:8080');
   const websocketLookup = networkBridge.websocketsLookup('ws://localhost:8080');
 
-  t.deepEqual(serverLookup, fakeObject, 'server correctly returned');
-  t.deepEqual(websocketLookup, [fakeObject], 'websockets correctly returned');
-  t.deepEqual(websocketLookup.length, 1, 'the correct number of websockets are returned');
+  expect(serverLookup).toBe(fakeObject);
+  expect(websocketLookup).toEqual([fakeObject])
 });
 
-test('that removing server and websockets works correctly', t => {
+test('that removing server and websockets works correctly', () => {
   networkBridge.attachServer(fakeObject, 'ws://localhost:8080');
   networkBridge.attachWebSocket(fakeObject, 'ws://localhost:8080');
 
   let websocketLookup = networkBridge.websocketsLookup('ws://localhost:8080');
-  t.deepEqual(websocketLookup.length, 1, 'the correct number of websockets are returned');
+  expect(websocketLookup).toHaveLength(1)
 
   networkBridge.removeWebSocket(fakeObject, 'ws://localhost:8080');
 
   websocketLookup = networkBridge.websocketsLookup('ws://localhost:8080');
-  t.deepEqual(websocketLookup.length, 0, 'the correct number of websockets are returned');
+  expect(websocketLookup).toHaveLength(0)
 
   networkBridge.removeServer('ws://localhost:8080');
-  t.deepEqual(networkBridge.urlMap, {}, 'Url map is back in its default state');
+  expect(networkBridge.urlMap).toEqual({})
 });
