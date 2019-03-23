@@ -1,0 +1,8 @@
+{
+  "defaultSeverity": "error",
+  "extends": ["@vovkasm/tslint-config"],
+  "rulesDirectory": ["tslint-plugin-prettier"],
+  "rules": {
+    "prettier": true
+  }
+}

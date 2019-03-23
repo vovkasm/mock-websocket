@@ -1,10 +1,10 @@
-import buble from 'rollup-plugin-buble';
-import commonjs from 'rollup-plugin-commonjs';
-import resolve from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs'
+import typescript from 'rollup-plugin-typescript2'
+import resolve from 'rollup-plugin-node-resolve'
 
 export default {
   input: 'src/index.js',
-  plugins: [buble(), resolve({ jsnext: true, main: true }), commonjs()],
+  plugins: [resolve({ jsnext: true }), typescript({ tsconfig: './tsconfig.dist.json' }), commonjs()],
   output: [
     {
       file: 'dist/mock-websocket.cjs.js',

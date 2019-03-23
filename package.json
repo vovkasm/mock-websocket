@@ -12,10 +12,12 @@
   },
   "scripts": {
     "test": "jest",
-    "test:coverage": "cross-env NODE_ENV=test nyc ava --serial",
     "build": "rm -rf dist && rollup -c rollup.config.js",
     "lint": "eslint src tests",
-    "format": "prettier --print-width 120 --single-quote --write '{src,tests}/**/*.js'",
+    "js:check": "tsc -p tsconfig.json",
+    "js:lint": "tslint -p tsconfig.json",
+    "js:test": "jest",
+    "prettier": "prettier --write '{src,tests}/**/*.ts'",
     "prepublishOnly": "npm run build"
   },
   "repository": {
@@ -39,12 +41,22 @@
   "devDependencies": {
     "@babel/core": "^7.4.0",
     "@babel/preset-env": "^7.4.2",
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/jest": "^24.0.11",
+    "@types/url-parse": "^1.4.3",
+    "@vovkasm/tslint-config": "^2.0.1",
     "babel-jest": "^24.5.0",
     "jest": "^24.5.0",
+    "prettier": "^1.16.4",
     "rollup": "^1.7.0",
-    "rollup-plugin-buble": "^0.19.6",
     "rollup-plugin-commonjs": "^9.2.1",
     "rollup-plugin-node-resolve": "^4.0.1",
-    "systemjs": "^3.0.2"
+    "rollup-plugin-typescript2": "^0.20.1",
+    "systemjs": "^3.0.2",
+    "ts-jest": "^24.0.0",
+    "tslib": "^1.9.3",
+    "tslint": "^5.14.0",
+    "tslint-plugin-prettier": "^2.0.1",
+    "typescript": "^3.3.4000"
   }
 }
