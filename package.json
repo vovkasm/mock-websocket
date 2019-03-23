@@ -3,7 +3,7 @@
   "version": "0.0.4",
   "description": "Javascript mocking library for websockets",
   "main": "./dist/mock-websocket",
-  "types": "./mock-websocket.d.ts",
+  "types": "./dist/index.d.ts",
   "directories": {
     "test": "tests"
   },
@@ -11,9 +11,8 @@
     "node": ">= 4"
   },
   "scripts": {
-    "test": "jest",
+    "test": "npm run js:check && npm run js:lint && npm run js:test",
     "build": "rm -rf dist && rollup -c rollup.config.js",
-    "lint": "eslint src tests",
     "js:check": "tsc -p tsconfig.json",
     "js:lint": "tslint -p tsconfig.json",
     "js:test": "jest",
