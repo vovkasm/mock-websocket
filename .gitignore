@@ -3,6 +3,7 @@ dist
 node_modules
 coverage
 .nyc_output
+.rpt2_cache
 
 # Individual files to exclude
 .DS_Store

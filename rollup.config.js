@@ -3,7 +3,7 @@ import typescript from 'rollup-plugin-typescript2'
 import resolve from 'rollup-plugin-node-resolve'
 
 export default {
-  input: 'src/index.js',
+  input: 'src/index.ts',
   plugins: [resolve({ jsnext: true }), typescript({ tsconfig: './tsconfig.dist.json' }), commonjs()],
   output: [
     {
@@ -27,5 +27,5 @@ export default {
       sourcemap: 'inline',
       format: 'es',
     },
-  ]
-};
+  ],
+}

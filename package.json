@@ -43,6 +43,7 @@
     "@babel/preset-env": "^7.4.2",
     "@babel/preset-typescript": "^7.3.3",
     "@types/jest": "^24.0.11",
+    "@types/jsdom": "^12.2.3",
     "@types/url-parse": "^1.4.3",
     "@vovkasm/tslint-config": "^2.0.1",
     "babel-jest": "^24.5.0",
