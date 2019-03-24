@@ -195,7 +195,7 @@ export default class WebSocket extends EventTarget implements DOMWebSocket {
     }, this)
   }
 
-  /*
+  /**
    * Transmits data to the server over the WebSocket connection.
    *
    * https://developer.mozilla.org/en-US/docs/Web/API/WebSocket#send()
@@ -218,7 +218,7 @@ export default class WebSocket extends EventTarget implements DOMWebSocket {
     }
   }
 
-  /*
+  /**
    * Closes the WebSocket connection or connection attempt, if any.
    * If the connection is already CLOSED, this method does nothing.
    *
