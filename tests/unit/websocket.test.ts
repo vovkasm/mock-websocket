@@ -61,3 +61,14 @@ test('that sending when the socket is closed throws an expection', () => {
     s.send('testing')
   }).toThrow()
 })
+
+test('close validate code', () => {
+  const s = new WebSocket('ws://not-real')
+  s._moveToState(WebSocket.OPEN)
+  expect(() => {
+    s.close(1015)
+  }).toThrow()
+  s._moveToState(WebSocket.OPEN)
+  s.close(1000)
+  expect(s.readyState).toBe(WebSocket.CLOSING)
+})

@@ -224,22 +224,30 @@ export default class WebSocket extends EventTarget implements DOMWebSocket {
    *
    * https://developer.mozilla.org/en-US/docs/Web/API/WebSocket#close()
    */
-  close() {
-    if (this.readyState !== WebSocket.OPEN) {
+  close(code?: number, reason?: string) {
+    if (code && !(code === 1000 || (code >= 3000 && code < 5000))) {
+      throw new Error('InvalidAccessError: close code out of user configurable range')
+    }
+
+    if (this.readyState === WebSocket.CLOSING || this.readyState === WebSocket.CLOSED) {
       return
     }
 
-    const server = networkBridge.serverLookup(this.url)
-    const closeEvent = createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL })
+    this._readyState = WebSocket.CLOSING
+    delay(function closeCallback() {
+      if (!code) code = 1000
+      const server = networkBridge.serverLookup(this.url)
+      const closeEvent = createCloseEvent({ type: 'close', target: this, code, reason })
 
-    networkBridge.removeWebSocket(this, this.url)
+      networkBridge.removeWebSocket(this, this.url)
 
-    this._readyState = WebSocket.CLOSED
-    this.dispatchEvent(closeEvent)
+      this._readyState = WebSocket.CLOSED
+      this.dispatchEvent(closeEvent)
 
-    if (server) {
-      server.dispatchSocketEvent('close', this)
-    }
+      if (server) {
+        server.dispatchSocketEvent('close', this)
+      }
+    }, this)
   }
 
   _moveToState(state: number) {
