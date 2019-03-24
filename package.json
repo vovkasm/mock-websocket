@@ -3,7 +3,7 @@
   "version": "0.0.4",
   "description": "Javascript mocking library for websockets",
   "main": "./dist/mock-websocket",
-  "types": "./mock-websocket.d.ts",
+  "types": "./dist/index.d.ts",
   "directories": {
     "test": "tests"
   },
@@ -11,11 +11,12 @@
     "node": ">= 4"
   },
   "scripts": {
-    "test": "cross-env NODE_ENV=test ava --serial --verbose",
-    "test:coverage": "cross-env NODE_ENV=test nyc ava --serial",
+    "test": "npm run js:check && npm run js:lint && npm run js:test",
     "build": "rm -rf dist && rollup -c rollup.config.js",
-    "lint": "eslint src tests",
-    "format": "prettier --print-width 120 --single-quote --write '{src,tests}/**/*.js'",
+    "js:check": "tsc -p tsconfig.json",
+    "js:lint": "tslint -p tsconfig.json",
+    "js:test": "jest",
+    "prettier": "prettier --write '{src,tests}/**/*.ts'",
     "prepublishOnly": "npm run build"
   },
   "repository": {
@@ -33,35 +34,29 @@
     "url": "https://github.com/vovkasm/mock-websocket/issues"
   },
   "homepage": "https://github.com/vovkasm/mock-websocket",
-  "devDependencies": {
-    "ava": "^0.25.0",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "babel-register": "^6.26.0",
-    "cross-env": "^5.0.0",
-    "eslint": "^4.16.0",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.0.1",
-    "jsdom": "^11.5.1",
-    "nyc": "^11.4.1",
-    "prettier": "^1.3.1",
-    "rollup": "^0.55.1",
-    "rollup-plugin-buble": "^0.18.0",
-    "rollup-plugin-commonjs": "^8.2.6",
-    "rollup-plugin-node-resolve": "^3.0.0",
-    "systemjs": "^0.21.0"
-  },
-  "ava": {
-    "files": [
-      "tests/**/*.test.js"
-    ],
-    "require": [
-      "babel-register",
-      "babel-polyfill"
-    ],
-    "babel": "inherit"
-  },
   "dependencies": {
-    "url-parse": "^1.2.0"
+    "url-parse": "^1.4.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.0",
+    "@babel/preset-env": "^7.4.2",
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/jest": "^24.0.11",
+    "@types/jsdom": "^12.2.3",
+    "@types/url-parse": "^1.4.3",
+    "@vovkasm/tslint-config": "^2.0.1",
+    "babel-jest": "^24.5.0",
+    "jest": "^24.5.0",
+    "prettier": "^1.16.4",
+    "rollup": "^1.7.0",
+    "rollup-plugin-commonjs": "^9.2.1",
+    "rollup-plugin-node-resolve": "^4.0.1",
+    "rollup-plugin-typescript2": "^0.20.1",
+    "systemjs": "^3.0.2",
+    "ts-jest": "^24.0.0",
+    "tslib": "^1.9.3",
+    "tslint": "^5.14.0",
+    "tslint-plugin-prettier": "^2.0.1",
+    "typescript": "^3.3.4000"
   }
 }

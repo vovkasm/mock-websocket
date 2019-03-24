@@ -1,6 +1,9 @@
+// tslint:disable:object-literal-sort-keys
+
 /*
  * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
  */
+
 export const CLOSE_CODES = {
   CLOSE_NORMAL: 1000,
   CLOSE_GOING_AWAY: 1001,
@@ -15,14 +18,14 @@ export const CLOSE_CODES = {
   INTERNAL_ERROR: 1011,
   SERVICE_RESTART: 1012,
   TRY_AGAIN_LATER: 1013,
-  TLS_HANDSHAKE: 1015
-};
+  TLS_HANDSHAKE: 1015,
+}
 
 export const ERROR_PREFIX = {
   CONSTRUCTOR_ERROR: "Failed to construct 'WebSocket':",
   EVENT: {
     CONSTRUCT: "Failed to construct 'Event':",
     MESSAGE: "Failed to construct 'MessageEvent':",
-    CLOSE: "Failed to construct 'CloseEvent':"
-  }
-};
+    CLOSE: "Failed to construct 'CloseEvent':",
+  },
+}
