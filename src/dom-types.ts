@@ -70,12 +70,15 @@ export interface Event {
   readonly target: EventTarget | null
   readonly timeStamp: number
   readonly type: string
+  /** @deprecated */
+  readonly srcElement: Element | null
 
   readonly AT_TARGET: number
   readonly BUBBLING_PHASE: number
   readonly CAPTURING_PHASE: number
   readonly NONE: number
 
+  initEvent(type: string, bubbles?: boolean, cancelable?: boolean): void
   composedPath(): EventTarget[]
   preventDefault(): void
   stopImmediatePropagation(): void

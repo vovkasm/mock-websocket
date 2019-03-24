@@ -1,5 +1,4 @@
-import MockServer from './server'
-import MockWebSocket from './websocket'
+import Server from './server'
+import WebSocket from './websocket'
 
-export const Server = MockServer
-export const WebSocket = MockWebSocket
+export { Server, WebSocket }

@@ -23,7 +23,7 @@ export default class WebSocket extends EventTarget implements DOMWebSocket {
   static readonly CLOSING = 2
   static readonly CLOSED = 3
 
-  binaryType: BinaryType
+  binaryType: BinaryType = 'blob'
 
   readonly CLOSED = WebSocket.CLOSED
   readonly CLOSING = WebSocket.CLOSING
@@ -33,7 +33,7 @@ export default class WebSocket extends EventTarget implements DOMWebSocket {
   private _bufferedAmount: number = 0
   private _extensions: string = ''
   private _protocol: string = ''
-  private _readyState: number = 0
+  private _readyState: number = WebSocket.CONNECTING
   private _url: string = ''
 
   private _onclose: CloseEventListener | null = null
@@ -123,16 +123,11 @@ export default class WebSocket extends EventTarget implements DOMWebSocket {
       throw new TypeError(`${ERROR_PREFIX.CONSTRUCTOR_ERROR} 1 argument required, but only 0 present.`)
     }
 
-    this.binaryType = 'blob'
-
     const urlRecord = new URL(url)
     if (!urlRecord.pathname) {
       urlRecord.set('pathname', '/')
     }
     this._url = urlRecord.toString()
-
-    this._readyState = WebSocket.CONNECTING
-    this._protocol = ''
 
     let protocols: string[]
     if (typeof protocol === 'string') {
