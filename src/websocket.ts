@@ -124,12 +124,20 @@ export default class WebSocket extends EventTarget implements DOMWebSocket {
     }
 
     const urlRecord = new URL(url)
+
+    if (urlRecord.protocol !== 'ws:' && urlRecord.protocol !== 'wss:') {
+      throw new Error('SyntaxError: url scheme incorrect')
+    }
+    if (urlRecord.hash) {
+      throw new Error('SyntaxError: url fragment exists')
+    }
+
     if (!urlRecord.pathname) {
       urlRecord.set('pathname', '/')
     }
     this._url = urlRecord.toString()
 
-    let protocols: string[]
+    let protocols: string[] = []
     if (typeof protocol === 'string') {
       this._protocol = protocol
       protocols = [protocol]
@@ -139,61 +147,51 @@ export default class WebSocket extends EventTarget implements DOMWebSocket {
     }
 
     const server = networkBridge.attachWebSocket(this, this.url)
-
-    /*
-     * This delay is needed so that we dont trigger an event before the callbacks have been
-     * setup. For example:
-     *
-     * var socket = new WebSocket('ws://localhost');
-     *
-     * // If we dont have the delay then the event would be triggered right here and this is
-     * // before the onopen had a chance to register itself.
-     *
-     * socket.onopen = () => { // this would never be called };
-     *
-     * // and with the delay the event gets triggered here after all of the callbacks have been
-     * // registered :-)
-     */
-    delay(function delayCallback() {
-      if (server) {
-        if (typeof server.options.verifyClient === 'function' && !server.options.verifyClient()) {
-          this._readyState = WebSocket.CLOSED
-
-          logError(
-            `WebSocket connection to '${this.url}' failed: HTTP Authentication failed; no valid credentials available`,
-          )
-
-          networkBridge.removeWebSocket(this, this.url)
-          this.dispatchEvent(createEvent({ type: 'error', target: this }))
-          this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }))
-        } else {
-          if (server.options.selectProtocol && typeof server.options.selectProtocol === 'function') {
-            const selectedProtocol = server.options.selectProtocol(protocols)
-            const isFilled = selectedProtocol !== ''
-            const isRequested = protocols.indexOf(selectedProtocol) !== -1
-            if (isFilled && !isRequested) {
-              this._readyState = WebSocket.CLOSED
-
-              logError(`WebSocket connection to '${this.url}' failed: Invalid Sub-Protocol`)
-
-              networkBridge.removeWebSocket(this, this.url)
-              this.dispatchEvent(createEvent({ type: 'error', target: this }))
-              this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }))
-              return
-            }
-            this._protocol = selectedProtocol
-          }
-          this._readyState = WebSocket.OPEN
-          this.dispatchEvent(createEvent({ type: 'open', target: this }))
-          server.dispatchSocketEvent('connection', this)
-        }
-      } else {
+    if (!server) {
+      delay(function delayCallback() {
         this._readyState = WebSocket.CLOSED
         this.dispatchEvent(createEvent({ type: 'error', target: this }))
         this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }))
 
         logError(`WebSocket connection to '${this.url}' failed`)
+      }, this)
+      return
+    }
+
+    if (typeof server.options.verifyClient === 'function' && !server.options.verifyClient()) {
+      delay(function delayCallback() {
+        this._readyState = WebSocket.CLOSED
+        networkBridge.removeWebSocket(this, this.url)
+        this.dispatchEvent(createEvent({ type: 'error', target: this }))
+        this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }))
+        logError(
+          `WebSocket connection to '${this.url}' failed: HTTP Authentication failed; no valid credentials available`,
+        )
+      }, this)
+      return
+    }
+
+    if (typeof server.options.selectProtocol === 'function') {
+      const selected = server.options.selectProtocol(protocols)
+      const isFilled = selected !== ''
+      const isRequested = protocols.indexOf(selected) !== -1
+      if (isFilled && !isRequested) {
+        delay(function delayCallback() {
+          this._readyState = WebSocket.CLOSED
+          networkBridge.removeWebSocket(this, this.url)
+          this.dispatchEvent(createEvent({ type: 'error', target: this }))
+          this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }))
+          logError(`WebSocket connection to '${this.url}' failed: Invalid Sub-Protocol`)
+        }, this)
+        return
       }
+      this._protocol = selected
+    }
+
+    delay(function delayCallback() {
+      this._readyState = WebSocket.OPEN
+      this.dispatchEvent(createEvent({ type: 'open', target: this }))
+      server.dispatchSocketEvent('connection', this)
     }, this)
   }
 

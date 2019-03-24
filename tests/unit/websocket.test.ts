@@ -11,6 +11,20 @@ test('that not passing a url throws an error', () => {
   }).toThrow()
 })
 
+test('that incorrect url schema throws an error', () => {
+  expect(() => {
+    // tslint:disable-next-line:no-unused-expression
+    new WebSocket('http://not-real')
+  }).toThrow()
+})
+
+test('that url with fragment throws an error', () => {
+  expect(() => {
+    // tslint:disable-next-line:no-unused-expression
+    new WebSocket('ws://not-real/#fragment')
+  }).toThrow()
+})
+
 test('that websockets inherents EventTarget methods', () => {
   const mySocket = new WebSocket('ws://not-real')
   expect(mySocket).toBeInstanceOf(EventTarget)
