@@ -215,6 +215,7 @@ test('that closing a websocket removes it from the network bridge', (done) => {
   socket.onclose = function close() {
     const urlMap = networkBridge.urlMap['ws://localhost:8080/']
     expect(urlMap.websockets).toHaveLength(0)
+    expect(server.clients()).toHaveLength(0)
     server.close()
     done()
   }

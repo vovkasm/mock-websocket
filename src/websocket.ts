@@ -236,14 +236,14 @@ export default class WebSocket extends EventTarget implements DOMWebSocket {
     this._readyState = WebSocket.CLOSING
     delay(function closeCallback() {
       if (!code) code = 1000
-      const server = networkBridge.serverLookup(this.url)
-      const closeEvent = createCloseEvent({ type: 'close', target: this, code, reason })
-
-      networkBridge.removeWebSocket(this, this.url)
 
       this._readyState = WebSocket.CLOSED
+      networkBridge.removeWebSocket(this, this.url)
+
+      const closeEvent = createCloseEvent({ type: 'close', target: this, code, reason })
       this.dispatchEvent(closeEvent)
 
+      const server = networkBridge.serverLookup(this.url)
       if (server) {
         server.dispatchSocketEvent('close', this)
       }

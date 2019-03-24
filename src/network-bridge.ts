@@ -61,7 +61,7 @@ class NetworkBridge {
    *
    * @param {string} url - the url to use to find which server is running on it
    */
-  serverLookup(url: string) {
+  serverLookup(url: string): Server | undefined {
     const connectionLookup = this.urlMap[url]
     return connectionLookup ? connectionLookup.server : undefined
   }
@@ -71,7 +71,7 @@ class NetworkBridge {
    *
    * @param {string} url - the url to use to find all websockets which are associated with it
    */
-  websocketsLookup(url: string) {
+  websocketsLookup(url: string): WebSocket[] {
     const connectionLookup = this.urlMap[url]
     return connectionLookup ? connectionLookup.websockets : []
   }
