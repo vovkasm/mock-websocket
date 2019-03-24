@@ -11,7 +11,7 @@ interface IURLMap {
   [url: string]: IConnection
 }
 
-/*
+/**
  * The network bridge is a way for the mock websocket object to 'communicate' with
  * all available servers. This is a singleton object so it is important that you
  * clean up urlMap whenever you are finished.
@@ -19,7 +19,7 @@ interface IURLMap {
 class NetworkBridge {
   urlMap: IURLMap = {}
 
-  /*
+  /**
    * Attaches a websocket object to the urlMap hash so that it can find the server
    * it is connected to and the server in turn can find it.
    *
@@ -37,7 +37,7 @@ class NetworkBridge {
     return connectionLookup.server
   }
 
-  /*
+  /**
    * Attaches a server object to the urlMap hash so that it can find a websockets
    * which are connected to it and so that websockets can in turn can find it.
    *
@@ -76,7 +76,7 @@ class NetworkBridge {
     return connectionLookup ? connectionLookup.websockets : []
   }
 
-  /*
+  /**
    * Removes the entry associated with the url.
    *
    * @param {string} url
@@ -85,7 +85,7 @@ class NetworkBridge {
     delete this.urlMap[url]
   }
 
-  /*
+  /**
    * Removes the individual websocket from the map of associated websockets.
    *
    * @param {object} websocket - websocket object to remove from the url map
