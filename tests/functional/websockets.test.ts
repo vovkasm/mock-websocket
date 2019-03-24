@@ -27,6 +27,16 @@ test('that onopen is called after successfully connection to the server', (done)
   }
 })
 
+test('that try to send data before OPEN throw exception', () => {
+  const server = new Server('ws://localhost:8080')
+  const sock = new WebSocket('ws://localhost:8080')
+  expect(() => {
+    sock.send('hello')
+  }).toThrow()
+
+  expect(server.clients()).toHaveLength(0)
+})
+
 test('that failing the verifyClient check invokes the onerror method', (done) => {
   const server = new Server('ws://localhost:8080', {
     verifyClient: () => false,

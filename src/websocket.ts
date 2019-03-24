@@ -203,6 +203,10 @@ export default class WebSocket extends EventTarget implements DOMWebSocket {
    * https://developer.mozilla.org/en-US/docs/Web/API/WebSocket#send()
    */
   send(data: any) {
+    if (this.readyState === WebSocket.CONNECTING) {
+      networkBridge.removeWebSocket(this, this.url)
+      throw new Error('InvalidStateError')
+    }
     if (this.readyState === WebSocket.CLOSING || this.readyState === WebSocket.CLOSED) {
       throw new Error('WebSocket is already in CLOSING or CLOSED state')
     }
