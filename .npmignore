@@ -1,3 +1,5 @@
+.rpt2_cache/
+.vscode/
 coverage
 tests
 
