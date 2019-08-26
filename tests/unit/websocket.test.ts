@@ -54,12 +54,11 @@ test('that passing protocols into the constructor works', () => {
   expect(s2.protocol).toBe('bar')
 })
 
-test('that sending when the socket is closed throws an expection', () => {
+test('that sending when the socket is closed only increments bufferedAmount', () => {
   const s = new WebSocket('ws://not-real', 'foo')
   s._moveToState(WebSocket.CLOSED)
-  expect(() => {
-    s.send('testing')
-  }).toThrow()
+  s.send('testing')
+  expect(s.bufferedAmount).toBe(7)
 })
 
 test('close validate code', () => {

@@ -206,7 +206,8 @@ export default class WebSocket extends EventTarget implements DOMWebSocket {
       throw new Error('InvalidStateError')
     }
     if (this.readyState === WebSocket.CLOSING || this.readyState === WebSocket.CLOSED) {
-      throw new Error('WebSocket is already in CLOSING or CLOSED state')
+      this._bufferedAmount += data.length
+      return
     }
 
     const server = networkBridge.serverLookup(this.url)
