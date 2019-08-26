@@ -1,6 +1,6 @@
 {
   "name": "mock-websocket",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Javascript mocking library for websockets",
   "main": "./dist/mock-websocket",
   "module": "./dist/mock-websocket.es.js",
