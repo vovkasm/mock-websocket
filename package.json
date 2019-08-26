@@ -3,6 +3,7 @@
   "version": "0.0.5",
   "description": "Javascript mocking library for websockets",
   "main": "./dist/mock-websocket",
+  "module": "./dist/mock-websocket.es.js",
   "types": "./dist/index.d.ts",
   "directories": {
     "test": "tests"
