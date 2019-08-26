@@ -4,7 +4,7 @@ import resolve from 'rollup-plugin-node-resolve'
 
 export default {
   input: 'src/index.ts',
-  plugins: [resolve({ jsnext: true }), typescript({ tsconfig: './tsconfig.dist.json' }), commonjs()],
+  plugins: [resolve(), typescript({ tsconfig: './tsconfig.dist.json' }), commonjs()],
   output: [
     {
       file: 'dist/mock-websocket.cjs.js',
